@@ -35,7 +35,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["STRAVA_CLIENT_ID"] = os.environ.get("STRAVA_CLIENT_ID")
 app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
 # Set the redirect URI for Strava
-app.config["STRAVA_REDIRECT_URI"] = "https://zone-wizard.malcolmmcdonal1.repl.co/callback"
+app.config["STRAVA_REDIRECT_URI"] = "https://workspace.malcolmmcdonal1.repl.co/callback"
 
 # Initialize the app with the extension
 db.init_app(app)
