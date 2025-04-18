@@ -26,7 +26,16 @@ def login():
     
     # Generate Strava authorization URL
     client_id = app.config['STRAVA_CLIENT_ID']
-    redirect_uri = app.config['STRAVA_REDIRECT_URI']
+    
+    # Force production domain for deployed app
+    production_domain = "zone-wizard-malcolmmcdonal1.replit.app"
+    
+    # Always use the production domain for the redirect URI when deployed
+    if os.environ.get("REPL_DEPLOYMENT_ID") is not None:
+        redirect_uri = f"https://{production_domain}/callback"
+    else:
+        redirect_uri = app.config['STRAVA_REDIRECT_URI']
+    
     if not client_id:
         flash('Strava client ID is not configured.', 'danger')
         return render_template('login.html', auth_url=None)
@@ -41,8 +50,11 @@ def login():
     auth_url = f"https://www.strava.com/oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={encoded_redirect_uri}&approval_prompt=force&scope={scope}"
     
     print(f"Generated Strava auth URL: {auth_url}")
+    print(f"Is deployed: {os.environ.get('REPL_DEPLOYMENT_ID') is not None}")
+    print(f"Using redirect URI: {redirect_uri}")
     return render_template('login.html', auth_url=auth_url)
 
+# Make sure our callback route exactly matches Strava's expectations
 @auth_bp.route('/callback')
 def callback():
     error = request.args.get('error')
