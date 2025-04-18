@@ -37,20 +37,14 @@ app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
 # Set the redirect URI for Strava
 import urllib.parse
 
-# Use the production domain for deployed app or get the Replit domain from environment variable
+# HARDCODED: Always use the production domain for Strava callback
+# This ensures consistency between development and production
 production_domain = "zone-wizard-malcolmmcdonal1.replit.app"
-# Check if we're in a deployed production environment
-is_production = os.environ.get("REPL_DEPLOYMENT_ID") is not None
+replit_domain = production_domain
 
-if is_production:
-    # Use the production domain for deployed app
-    replit_domain = production_domain
-else:
-    # Get the Replit domain from the REPLIT_DOMAINS environment variable (for development)
-    replit_domain = os.environ.get("REPLIT_DOMAINS", "").split(",")[0]
-    if not replit_domain:
-        # Fallback to the old style domain if REPLIT_DOMAINS is not available
-        replit_domain = os.environ.get("REPL_SLUG", "workspace") + "." + os.environ.get("REPL_OWNER", "malcolmmcdonal1") + ".repl.co"
+# Keep this logging just for debugging
+print(f"Using hard-coded domain: {replit_domain}")
+print(f"Is deployed: {os.environ.get('REPL_DEPLOYMENT_ID') is not None}")
 
 # Build and URL-encode the callback URI
 callback_path = "/callback"
