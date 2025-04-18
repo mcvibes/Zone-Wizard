@@ -2,6 +2,18 @@ from datetime import datetime
 from app import db
 from flask_login import UserMixin
 import json
+import numpy as np
+
+# Custom JSON encoder to handle NumPy types
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NumpyEncoder, self).default(obj)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,7 +62,7 @@ class Activity(db.Model):
     
     def set_hr_data(self, hr_data):
         """Store heart rate data as a JSON string"""
-        self.hr_data = json.dumps(hr_data)
+        self.hr_data = json.dumps(hr_data, cls=NumpyEncoder)
     
     def get_zone_data(self):
         """Return zone data as a dictionary"""
@@ -60,7 +72,7 @@ class Activity(db.Model):
     
     def set_zone_data(self, zone_data):
         """Store zone data as a JSON string"""
-        self.zone_data = json.dumps(zone_data)
+        self.zone_data = json.dumps(zone_data, cls=NumpyEncoder)
 
 class HeartRateZones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
