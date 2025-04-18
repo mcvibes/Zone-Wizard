@@ -14,4 +14,5 @@ dependencies = [
     "requests>=2.32.3",
     "numpy>=2.2.4",
     "sqlalchemy>=2.0.40",
+    "oauthlib>=3.2.2",
 ]
