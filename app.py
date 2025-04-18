@@ -34,7 +34,17 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Strava API settings
 app.config["STRAVA_CLIENT_ID"] = os.environ.get("STRAVA_CLIENT_ID")
 app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
-app.config["STRAVA_REDIRECT_URI"] = os.environ.get("STRAVA_REDIRECT_URI", "http://localhost:5000/callback")
+# Get Replit domain or use environment variable if set
+replit_domain = os.environ.get("REPLIT_DOMAIN")
+redirect_uri = os.environ.get("STRAVA_REDIRECT_URI")
+
+if not redirect_uri and replit_domain:
+    redirect_uri = f"https://{replit_domain}/callback"
+elif not redirect_uri:
+    # Fallback to localhost for local development
+    redirect_uri = "http://localhost:5000/callback"
+
+app.config["STRAVA_REDIRECT_URI"] = redirect_uri
 
 # Initialize the app with the extension
 db.init_app(app)
@@ -51,3 +61,6 @@ app.register_blueprint(auth_bp)
 
 # Import routes after app is created to avoid circular imports
 import routes
+
+# Print the Strava redirect URI for reference
+print(f"Strava redirect URI: {app.config['STRAVA_REDIRECT_URI']}")
