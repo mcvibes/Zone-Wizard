@@ -50,8 +50,23 @@ function createZoneChart(elementId, labels, data, colors) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: ${context.raw}%`;
+                            const value = context.raw;
+                            const percentage = Math.round(value * 10) / 10; // Round to 1 decimal place
+                            return `${context.label}: ${percentage}%`;
                         }
+                    }
+                },
+                datalabels: {
+                    display: function(context) {
+                        return context.dataset.data[context.dataIndex] > 5; // Only show label if > 5%
+                    },
+                    formatter: function(value) {
+                        return Math.round(value) + '%';
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
                     }
                 }
             }

@@ -60,7 +60,7 @@ function createZoneProgressBar(zonePercentages, zoneColors, containerId) {
     // Create the progress bar container
     const progressContainer = document.createElement('div');
     progressContainer.className = 'd-flex';
-    progressContainer.style.height = '10px';
+    progressContainer.style.height = '20px';  // Increased height to fit text
     
     // Add segments for each zone
     for (const [zone, percentage] of Object.entries(zonePercentages)) {
@@ -68,9 +68,22 @@ function createZoneProgressBar(zonePercentages, zoneColors, containerId) {
             const segment = document.createElement('div');
             segment.style.backgroundColor = zoneColors[zone];
             segment.style.width = `${percentage}%`;
+            segment.style.position = 'relative';
+            segment.style.display = 'flex';
+            segment.style.alignItems = 'center';
+            segment.style.justifyContent = 'center';
+            segment.style.color = '#fff';
+            segment.style.textShadow = '0px 0px 2px rgba(0,0,0,0.8)';
+            segment.style.fontSize = '10px';
+            segment.style.fontWeight = 'bold';
             segment.setAttribute('data-bs-toggle', 'tooltip');
             segment.setAttribute('data-bs-placement', 'top');
             segment.setAttribute('title', `${zone}: ${percentage}%`);
+            
+            // Only add text if segment is wide enough
+            if (percentage >= 5) {
+                segment.textContent = `${Math.round(percentage)}%`;
+            }
             
             progressContainer.appendChild(segment);
         }

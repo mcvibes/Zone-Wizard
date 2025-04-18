@@ -178,11 +178,17 @@ def profile():
     # Calculate actual zone values
     zones = user_zones.calculate_zones()
     
+    # Get zone colors from zone_calculator
+    zone_colors = get_zone_colors()
+    zone_labels = get_zone_labels()
+    
     return render_template(
         'profile.html',
         user=current_user,
         user_zones=user_zones,
         zones=zones,
+        zone_colors=zone_colors,
+        zone_labels=zone_labels,
         estimated_max_hr=estimated_max_hr
     )
 
