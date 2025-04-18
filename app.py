@@ -35,13 +35,21 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["STRAVA_CLIENT_ID"] = os.environ.get("STRAVA_CLIENT_ID")
 app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
 # Set the redirect URI for Strava
+import urllib.parse
+
 # Get the Replit domain from the REPLIT_DOMAINS environment variable
 replit_domain = os.environ.get("REPLIT_DOMAINS", "").split(",")[0]
 if not replit_domain:
     # Fallback to the old style domain if REPLIT_DOMAINS is not available
     replit_domain = os.environ.get("REPL_SLUG", "workspace") + "." + os.environ.get("REPL_OWNER", "malcolmmcdonal1") + ".repl.co"
-app.config["STRAVA_REDIRECT_URI"] = f"https://{replit_domain}/callback"
+
+# Build and URL-encode the callback URI
+callback_path = "/callback"
+full_callback_url = f"https://{replit_domain}{callback_path}"
+app.config["STRAVA_REDIRECT_URI"] = full_callback_url
 print(f"Using Replit domain: {replit_domain}")
+print(f"Full callback URL: {full_callback_url}")
+print(f"For Strava settings, use domain: {replit_domain} (without https:// or /callback)")
 
 # Initialize the app with the extension
 db.init_app(app)

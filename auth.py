@@ -33,8 +33,14 @@ def login():
     
     # Scope for read access to activities and profile
     scope = 'read,activity:read,profile:read_all'
-    auth_url = f"https://www.strava.com/oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&approval_prompt=force&scope={scope}"
     
+    # URL encode the redirect_uri to ensure it's properly formatted
+    import urllib.parse
+    encoded_redirect_uri = urllib.parse.quote(redirect_uri, safe='')
+    
+    auth_url = f"https://www.strava.com/oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={encoded_redirect_uri}&approval_prompt=force&scope={scope}"
+    
+    print(f"Generated Strava auth URL: {auth_url}")
     return render_template('login.html', auth_url=auth_url)
 
 @auth_bp.route('/callback')
