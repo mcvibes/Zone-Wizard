@@ -93,55 +93,33 @@ class HeartRateZones(db.Model):
         if not self.max_hr:
             return None
         
-        zones = {}
-        if self.zone_method == "karvonen" and self.resting_hr:
-            # Karvonen formula: Target HR = ((HRmax - HRrest) × %Intensity) + HRrest
-            hrr = self.max_hr - self.resting_hr
-            zones = {
-                "zone1": {
-                    "min": int(self.resting_hr + hrr * (self.zone1_threshold - 10) / 100),
-                    "max": int(self.resting_hr + hrr * self.zone1_threshold / 100)
-                },
-                "zone2": {
-                    "min": int(self.resting_hr + hrr * self.zone1_threshold / 100),
-                    "max": int(self.resting_hr + hrr * self.zone2_threshold / 100)
-                },
-                "zone3": {
-                    "min": int(self.resting_hr + hrr * self.zone2_threshold / 100),
-                    "max": int(self.resting_hr + hrr * self.zone3_threshold / 100)
-                },
-                "zone4": {
-                    "min": int(self.resting_hr + hrr * self.zone3_threshold / 100),
-                    "max": int(self.resting_hr + hrr * self.zone4_threshold / 100)
-                },
-                "zone5": {
-                    "min": int(self.resting_hr + hrr * self.zone4_threshold / 100),
-                    "max": int(self.max_hr)
-                }
+        # Simple 20bpm increments method as requested
+        # Zone 1: max_hr - 80bpm to max_hr - 60bpm
+        # Zone 2: max_hr - 60bpm to max_hr - 40bpm
+        # Zone 3: max_hr - 40bpm to max_hr - 20bpm
+        # Zone 4: max_hr - 20bpm to max_hr
+        # Zone 5: max_hr+
+        zones = {
+            "zone1": {
+                "min": max(self.max_hr - 80, 90),  # Ensure min is at least 90bpm
+                "max": self.max_hr - 60
+            },
+            "zone2": {
+                "min": self.max_hr - 60,
+                "max": self.max_hr - 40
+            },
+            "zone3": {
+                "min": self.max_hr - 40,
+                "max": self.max_hr - 20
+            },
+            "zone4": {
+                "min": self.max_hr - 20,
+                "max": self.max_hr
+            },
+            "zone5": {
+                "min": self.max_hr,
+                "max": self.max_hr + 10  # Just for visualization purposes
             }
-        else:
-            # Percentage method: Target HR = HRmax × %Intensity
-            zones = {
-                "zone1": {
-                    "min": int(self.max_hr * (self.zone1_threshold - 10) / 100),
-                    "max": int(self.max_hr * self.zone1_threshold / 100)
-                },
-                "zone2": {
-                    "min": int(self.max_hr * self.zone1_threshold / 100),
-                    "max": int(self.max_hr * self.zone2_threshold / 100)
-                },
-                "zone3": {
-                    "min": int(self.max_hr * self.zone2_threshold / 100),
-                    "max": int(self.max_hr * self.zone3_threshold / 100)
-                },
-                "zone4": {
-                    "min": int(self.max_hr * self.zone3_threshold / 100),
-                    "max": int(self.max_hr * self.zone4_threshold / 100)
-                },
-                "zone5": {
-                    "min": int(self.max_hr * self.zone4_threshold / 100),
-                    "max": int(self.max_hr)
-                }
-            }
+        }
         
         return zones

@@ -4,6 +4,9 @@
 
 // Configure Chart.js global defaults
 if (Chart) {
+    // Register the DataLabels plugin for all charts
+    Chart.register(ChartDataLabels);
+    
     // Set default font family and colors
     Chart.defaults.font.family = "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
     
@@ -17,6 +20,9 @@ if (Chart) {
     // Enable responsive charts by default
     Chart.defaults.responsive = true;
     Chart.defaults.maintainAspectRatio = false;
+    
+    // Disable DataLabels by default (we'll enable them only for specific charts)
+    Chart.defaults.plugins.datalabels.display = false;
 }
 
 /**

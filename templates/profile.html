@@ -63,39 +63,27 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="resting_hr" class="form-label">Resting Heart Rate (bpm)</label>
-                                <input type="number" class="form-control" id="resting_hr" name="resting_hr" value="{{ user_zones.resting_hr }}" min="30" max="100" required>
-                                <div class="form-text text-muted">
-                                    <small>Your heart rate when completely at rest</small>
-                                </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Zones use simple 20 BPM increments:
+                                <ul class="mb-0 mt-2">
+                                    <li>Zone 1: Max HR-80 to Max HR-60</li>
+                                    <li>Zone 2: Max HR-60 to Max HR-40</li>
+                                    <li>Zone 3: Max HR-40 to Max HR-20</li>
+                                    <li>Zone 4: Max HR-20 to Max HR</li>
+                                    <li>Zone 5: Max HR+</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="zone_method" class="form-label">Zone Calculation Method</label>
-                                <select class="form-select" id="zone_method" name="zone_method">
-                                    <option value="percentage" {% if user_zones.zone_method == 'percentage' %}selected{% endif %}>Percentage of Max HR</option>
-                                    <option value="karvonen" {% if user_zones.zone_method == 'karvonen' %}selected{% endif %}>Karvonen Formula (HRR)</option>
-                                </select>
-                                <div class="form-text text-muted">
-                                    <small>Karvonen formula uses both max and resting HR for more personalized zones</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h5 class="mb-3">Zone Thresholds</h5>
+                    <h5 class="mb-3">Heart Rate Zones</h5>
                     <div class="table-responsive mb-4">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Zone</th>
                                     <th>Description</th>
-                                    <th>Threshold (%)</th>
                                     <th>Heart Rate Range</th>
                                 </tr>
                             </thead>
@@ -106,9 +94,6 @@
                                         Zone 1
                                     </td>
                                     <td>Very Light (Recovery)</td>
-                                    <td>
-                                        <input type="number" class="form-control form-control-sm" id="zone1_threshold" name="zone1_threshold" value="{{ user_zones.zone1_threshold }}" min="50" max="70" required>
-                                    </td>
                                     <td>
                                         {% if zones %}
                                         {{ zones.zone1.min }} - {{ zones.zone1.max }} bpm
@@ -124,9 +109,6 @@
                                     </td>
                                     <td>Light (Endurance)</td>
                                     <td>
-                                        <input type="number" class="form-control form-control-sm" id="zone2_threshold" name="zone2_threshold" value="{{ user_zones.zone2_threshold }}" min="60" max="80" required>
-                                    </td>
-                                    <td>
                                         {% if zones %}
                                         {{ zones.zone2.min }} - {{ zones.zone2.max }} bpm
                                         {% else %}
@@ -140,9 +122,6 @@
                                         Zone 3
                                     </td>
                                     <td>Moderate (Aerobic)</td>
-                                    <td>
-                                        <input type="number" class="form-control form-control-sm" id="zone3_threshold" name="zone3_threshold" value="{{ user_zones.zone3_threshold }}" min="70" max="90" required>
-                                    </td>
                                     <td>
                                         {% if zones %}
                                         {{ zones.zone3.min }} - {{ zones.zone3.max }} bpm
@@ -158,9 +137,6 @@
                                     </td>
                                     <td>Hard (Threshold)</td>
                                     <td>
-                                        <input type="number" class="form-control form-control-sm" id="zone4_threshold" name="zone4_threshold" value="{{ user_zones.zone4_threshold }}" min="80" max="95" required>
-                                    </td>
-                                    <td>
                                         {% if zones %}
                                         {{ zones.zone4.min }} - {{ zones.zone4.max }} bpm
                                         {% else %}
@@ -175,11 +151,8 @@
                                     </td>
                                     <td>Maximum (Anaerobic)</td>
                                     <td>
-                                        <input type="number" class="form-control form-control-sm" id="zone5_threshold" name="zone5_threshold" value="{{ user_zones.zone5_threshold }}" min="90" max="100" required readonly>
-                                    </td>
-                                    <td>
                                         {% if zones %}
-                                        {{ zones.zone5.min }} - {{ zones.zone5.max }} bpm
+                                        {{ zones.zone5.min }}+ bpm
                                         {% else %}
                                         -
                                         {% endif %}
@@ -208,23 +181,17 @@
 
 {% block scripts %}
 <script>
-    // Validate that zone thresholds are in ascending order
+    // Simple validation for max heart rate
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
-        const zone1Input = document.getElementById('zone1_threshold');
-        const zone2Input = document.getElementById('zone2_threshold');
-        const zone3Input = document.getElementById('zone3_threshold');
-        const zone4Input = document.getElementById('zone4_threshold');
+        const maxHrInput = document.getElementById('max_hr');
         
         form.addEventListener('submit', function(event) {
-            const zone1 = parseInt(zone1Input.value);
-            const zone2 = parseInt(zone2Input.value);
-            const zone3 = parseInt(zone3Input.value);
-            const zone4 = parseInt(zone4Input.value);
+            const maxHr = parseInt(maxHrInput.value);
             
-            if (zone1 >= zone2 || zone2 >= zone3 || zone3 >= zone4) {
+            if (maxHr < 100 || maxHr > 230) {
                 event.preventDefault();
-                alert('Zone thresholds must be in ascending order (Zone 1 < Zone 2 < Zone 3 < Zone 4)');
+                alert('Maximum heart rate must be between 100 and 230 bpm');
             }
         });
     });

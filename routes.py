@@ -141,26 +141,21 @@ def profile():
     
     if request.method == 'POST':
         try:
-            # Update heart rate zone settings
-            user_zones.max_hr = int(request.form.get('max_hr', 180))
-            user_zones.resting_hr = int(request.form.get('resting_hr', 60))
-            user_zones.zone_method = request.form.get('zone_method', 'percentage')
+            # Update only max heart rate using the fixed 20bpm increments method
+            max_hr = int(request.form.get('max_hr', 180))
             
-            # Update zone thresholds if provided
-            if all(f'zone{i}_threshold' in request.form for i in range(1, 6)):
-                user_zones.zone1_threshold = int(request.form.get('zone1_threshold'))
-                user_zones.zone2_threshold = int(request.form.get('zone2_threshold'))
-                user_zones.zone3_threshold = int(request.form.get('zone3_threshold'))
-                user_zones.zone4_threshold = int(request.form.get('zone4_threshold'))
-                user_zones.zone5_threshold = int(request.form.get('zone5_threshold'))
-            
-            db.session.commit()
-            flash('Heart rate zone settings updated successfully!', 'success')
-            
-            # Recalculate zones for all activities
-            recalculate_all_activity_zones(current_user.id)
-            
-            return redirect(url_for('profile'))
+            # Validate max_hr range
+            if max_hr < 100 or max_hr > 230:
+                flash('Maximum heart rate must be between 100 and 230 bpm', 'danger')
+            else:
+                user_zones.max_hr = max_hr
+                db.session.commit()
+                flash('Heart rate zone settings updated successfully!', 'success')
+                
+                # Recalculate zones for all activities
+                recalculate_all_activity_zones(current_user.id)
+                
+                return redirect(url_for('profile'))
         
         except ValueError:
             flash('Please enter valid numbers for heart rate values', 'danger')
