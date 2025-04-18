@@ -35,9 +35,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["STRAVA_CLIENT_ID"] = os.environ.get("STRAVA_CLIENT_ID")
 app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
 # Set the redirect URI for Strava
-# Get the Replit domain from environment or use a default for development
-replit_domain = os.environ.get("REPL_SLUG", "workspace") + "." + os.environ.get("REPL_OWNER", "malcolmmcdonal1") + ".repl.co"
+# Get the Replit domain from the REPLIT_DOMAINS environment variable
+replit_domain = os.environ.get("REPLIT_DOMAINS", "").split(",")[0]
+if not replit_domain:
+    # Fallback to the old style domain if REPLIT_DOMAINS is not available
+    replit_domain = os.environ.get("REPL_SLUG", "workspace") + "." + os.environ.get("REPL_OWNER", "malcolmmcdonal1") + ".repl.co"
 app.config["STRAVA_REDIRECT_URI"] = f"https://{replit_domain}/callback"
+print(f"Using Replit domain: {replit_domain}")
 
 # Initialize the app with the extension
 db.init_app(app)
