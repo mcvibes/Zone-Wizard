@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Heart Rate Zone Tracker{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="fas fa-user me-2"></i> Profile</h1>
+
+<div class="row">
+    <!-- User Profile -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">User Information</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile_pic %}
+                <img src="{{ user.profile_pic }}" alt="Profile Picture" class="rounded-circle img-thumbnail mb-3" style="width: 120px; height: 120px;">
+                {% else %}
+                <div class="mb-3">
+                    <i class="fas fa-user-circle fa-5x text-secondary"></i>
+                </div>
+                {% endif %}
+                
+                <h3>{{ user.firstname }} {{ user.lastname }}</h3>
+                {% if user.username %}
+                <p class="text-muted">@{{ user.username }}</p>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="https://www.strava.com/athletes/{{ user.strava_id }}" target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-external-link-alt me-1"></i> View on Strava
+                    </a>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="small text-muted text-start">
+                    <p class="mb-1"><strong>Connected:</strong> {{ user.token_expiry.strftime('%b %d, %Y') if user.token_expiry else 'Unknown' }}</p>
+                    <p class="mb-0"><strong>Strava ID:</strong> {{ user.strava_id }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Heart Rate Zone Settings -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Heart Rate Zone Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="max_hr" class="form-label">Maximum Heart Rate (bpm)</label>
+                                <input type="number" class="form-control" id="max_hr" name="max_hr" value="{{ user_zones.max_hr }}" min="100" max="230" required>
+                                {% if estimated_max_hr %}
+                                <div class="form-text text-muted">
+                                    <small>Estimated max HR based on age: {{ estimated_max_hr }} bpm</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="resting_hr" class="form-label">Resting Heart Rate (bpm)</label>
+                                <input type="number" class="form-control" id="resting_hr" name="resting_hr" value="{{ user_zones.resting_hr }}" min="30" max="100" required>
+                                <div class="form-text text-muted">
+                                    <small>Your heart rate when completely at rest</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="zone_method" class="form-label">Zone Calculation Method</label>
+                                <select class="form-select" id="zone_method" name="zone_method">
+                                    <option value="percentage" {% if user_zones.zone_method == 'percentage' %}selected{% endif %}>Percentage of Max HR</option>
+                                    <option value="karvonen" {% if user_zones.zone_method == 'karvonen' %}selected{% endif %}>Karvonen Formula (HRR)</option>
+                                </select>
+                                <div class="form-text text-muted">
+                                    <small>Karvonen formula uses both max and resting HR for more personalized zones</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Zone Thresholds</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Zone</th>
+                                    <th>Description</th>
+                                    <th>Threshold (%)</th>
+                                    <th>Heart Rate Range</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone1 }};"></span>
+                                        Zone 1
+                                    </td>
+                                    <td>Very Light (Recovery)</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" id="zone1_threshold" name="zone1_threshold" value="{{ user_zones.zone1_threshold }}" min="50" max="70" required>
+                                    </td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone1.min }} - {{ zones.zone1.max }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone2 }};"></span>
+                                        Zone 2
+                                    </td>
+                                    <td>Light (Endurance)</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" id="zone2_threshold" name="zone2_threshold" value="{{ user_zones.zone2_threshold }}" min="60" max="80" required>
+                                    </td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone2.min }} - {{ zones.zone2.max }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone3 }};"></span>
+                                        Zone 3
+                                    </td>
+                                    <td>Moderate (Aerobic)</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" id="zone3_threshold" name="zone3_threshold" value="{{ user_zones.zone3_threshold }}" min="70" max="90" required>
+                                    </td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone3.min }} - {{ zones.zone3.max }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone4 }};"></span>
+                                        Zone 4
+                                    </td>
+                                    <td>Hard (Threshold)</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" id="zone4_threshold" name="zone4_threshold" value="{{ user_zones.zone4_threshold }}" min="80" max="95" required>
+                                    </td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone4.min }} - {{ zones.zone4.max }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone5 }};"></span>
+                                        Zone 5
+                                    </td>
+                                    <td>Maximum (Anaerobic)</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" id="zone5_threshold" name="zone5_threshold" value="{{ user_zones.zone5_threshold }}" min="90" max="100" required readonly>
+                                    </td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone5.min }} - {{ zones.zone5.max }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Changing your heart rate zones will recalculate zone data for all your activities.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Zone Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Validate that zone thresholds are in ascending order
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const zone1Input = document.getElementById('zone1_threshold');
+        const zone2Input = document.getElementById('zone2_threshold');
+        const zone3Input = document.getElementById('zone3_threshold');
+        const zone4Input = document.getElementById('zone4_threshold');
+        
+        form.addEventListener('submit', function(event) {
+            const zone1 = parseInt(zone1Input.value);
+            const zone2 = parseInt(zone2Input.value);
+            const zone3 = parseInt(zone3Input.value);
+            const zone4 = parseInt(zone4Input.value);
+            
+            if (zone1 >= zone2 || zone2 >= zone3 || zone3 >= zone4) {
+                event.preventDefault();
+                alert('Zone thresholds must be in ascending order (Zone 1 < Zone 2 < Zone 3 < Zone 4)');
+            }
+        });
+    });
+</script>
+{% endblock %}

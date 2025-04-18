@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Login with Strava | Heart Rate Zone Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i> Login with Strava</h4>
+            </div>
+            <div class="card-body text-center p-5">
+                <img src="https://cdn.iconscout.com/icon/free/png-256/strava-3521604-2945048.png" alt="Strava Logo" class="img-fluid mb-4" style="max-width: 100px;">
+                
+                <p class="card-text mb-4">
+                    Connect your Strava account to analyze your heart rate zones and track your training intensity.
+                </p>
+                
+                {% if auth_url %}
+                <a href="{{ auth_url }}" class="btn btn-lg btn-secondary">
+                    <i class="fas fa-plug me-2"></i> Connect with Strava
+                </a>
+                {% else %}
+                <div class="alert alert-danger">
+                    <strong>Configuration Error:</strong> Strava API credentials are not properly configured.
+                </div>
+                {% endif %}
+                
+                <div class="mt-4 text-muted">
+                    <small>
+                        <i class="fas fa-lock me-1"></i> We only request read access to your activities and profile information.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">What we access:</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-list me-2"></i> Read your activities
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-user me-2"></i> Basic profile information
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-heartbeat me-2"></i> Heart rate data from your activities
+                    </li>
+                </ul>
+                <div class="mt-3 text-muted">
+                    <small>
+                        We never post to Strava on your behalf or modify your data in any way.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
