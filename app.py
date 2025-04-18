@@ -34,17 +34,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Strava API settings
 app.config["STRAVA_CLIENT_ID"] = os.environ.get("STRAVA_CLIENT_ID")
 app.config["STRAVA_CLIENT_SECRET"] = os.environ.get("STRAVA_CLIENT_SECRET")
-# Get Replit domain or use environment variable if set
-replit_domain = os.environ.get("REPLIT_DOMAIN")
-redirect_uri = os.environ.get("STRAVA_REDIRECT_URI")
-
-if not redirect_uri and replit_domain:
-    redirect_uri = f"https://{replit_domain}/callback"
-elif not redirect_uri:
-    # Fallback to localhost for local development
-    redirect_uri = "http://localhost:5000/callback"
-
-app.config["STRAVA_REDIRECT_URI"] = redirect_uri
+# Set the redirect URI for Strava
+app.config["STRAVA_REDIRECT_URI"] = "https://zone-wizard.malcolmmcdonal1.repl.co/callback"
 
 # Initialize the app with the extension
 db.init_app(app)
