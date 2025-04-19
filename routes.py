@@ -178,6 +178,8 @@ def profile():
     
     # Calculate actual zone values
     zones = user_zones.calculate_zones()
+    print(f"Profile page - User max HR: {user_zones.max_hr}")
+    print(f"Profile page - Calculated zones: {zones}")
     
     # Get zone colors from zone_calculator
     zone_colors = get_zone_colors()
