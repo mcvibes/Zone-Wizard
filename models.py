@@ -102,23 +102,28 @@ class HeartRateZones(db.Model):
         zones = {
             "zone5": {
                 "min": self.max_hr - 20,
-                "max": self.max_hr
+                "max": self.max_hr,
+                "display": f"{self.max_hr - 20} - {self.max_hr}"  # Explicit display format
             },
             "zone4": {
                 "min": self.max_hr - 40,
-                "max": self.max_hr - 20
+                "max": self.max_hr - 20,
+                "display": f"{self.max_hr - 40} - {self.max_hr - 20}"
             },
             "zone3": {
                 "min": self.max_hr - 60,
-                "max": self.max_hr - 40
+                "max": self.max_hr - 40,
+                "display": f"{self.max_hr - 60} - {self.max_hr - 40}"
             },
             "zone2": {
                 "min": self.max_hr - 80,
-                "max": self.max_hr - 60
+                "max": self.max_hr - 60,
+                "display": f"{self.max_hr - 80} - {self.max_hr - 60}"
             },
             "zone1": {
                 "min": max(self.max_hr - 100, 90),  # Ensure min is at least 90bpm
-                "max": self.max_hr - 80
+                "max": self.max_hr - 80,
+                "display": f"{max(self.max_hr - 100, 90)} - {self.max_hr - 80}"
             }
         }
         

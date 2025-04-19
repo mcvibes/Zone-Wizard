@@ -97,7 +97,7 @@
                                     <td>Very Light (Recovery)</td>
                                     <td>
                                         {% if zones %}
-                                        {{ zones.zone1.min }} - {{ zones.zone1.max }} bpm
+                                        {{ zones.zone1.display }} bpm
                                         {% else %}
                                         -
                                         {% endif %}
@@ -111,7 +111,7 @@
                                     <td>Light (Endurance)</td>
                                     <td>
                                         {% if zones %}
-                                        {{ zones.zone2.min }} - {{ zones.zone2.max }} bpm
+                                        {{ zones.zone2.display }} bpm
                                         {% else %}
                                         -
                                         {% endif %}
@@ -125,7 +125,7 @@
                                     <td>Moderate (Aerobic)</td>
                                     <td>
                                         {% if zones %}
-                                        {{ zones.zone3.min }} - {{ zones.zone3.max }} bpm
+                                        {{ zones.zone3.display }} bpm
                                         {% else %}
                                         -
                                         {% endif %}
@@ -139,7 +139,7 @@
                                     <td>Hard (Threshold)</td>
                                     <td>
                                         {% if zones %}
-                                        {{ zones.zone4.min }} - {{ zones.zone4.max }} bpm
+                                        {{ zones.zone4.display }} bpm
                                         {% else %}
                                         -
                                         {% endif %}
@@ -153,7 +153,7 @@
                                     <td>Maximum (Anaerobic)</td>
                                     <td>
                                         {% if zones %}
-                                        {{ zones.zone5.min }} - {{ zones.zone5.max }} bpm
+                                        {{ zones.zone5.display }} bpm
                                         {% else %}
                                         -
                                         {% endif %}

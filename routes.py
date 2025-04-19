@@ -181,6 +181,13 @@ def profile():
     print(f"Profile page - User max HR: {user_zones.max_hr}")
     print(f"Profile page - Calculated zones: {zones}")
     
+    # Explicitly ensure zone5 max is displayed correctly - not as a plus sign
+    if zones and 'zone5' in zones:
+        print(f"Zone 5 min: {zones['zone5']['min']}, max: {zones['zone5']['max']}")
+        # Ensure it's displayed as an actual range, not a plus
+        if zones['zone5']['max'] == user_zones.max_hr:
+            print(f"Zone 5 is set correctly to max: {zones['zone5']['max']}")
+    
     # Get zone colors from zone_calculator
     zone_colors = get_zone_colors()
     zone_labels = get_zone_labels()
