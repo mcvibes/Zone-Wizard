@@ -133,15 +133,16 @@ def get_zone_colors():
         "below": "#AAAAAA"   # Gray - Below zone 1
     }
 
-def get_zone_labels():
+def get_zone_labels(max_hr=None):
     """
-    Return human-readable labels for heart rate zones with BPM ranges
+    Return human-readable labels for heart rate zones
+    Now using generic descriptions without bpm ranges since they're based on max_hr
     """
     return {
-        "zone1": "Zone 1 - Very Light (120-140 bpm)",
-        "zone2": "Zone 2 - Light (140-160 bpm)",
-        "zone3": "Zone 3 - Moderate (160-180 bpm)",
-        "zone4": "Zone 4 - Hard (180-200 bpm)",
-        "zone5": "Zone 5 - Maximum (200+ bpm)",
-        "below": "Below Zone 1 (<120 bpm)"
+        "zone1": "Zone 1 - Very Light (Recovery)",
+        "zone2": "Zone 2 - Light (Endurance)",
+        "zone3": "Zone 3 - Moderate (Aerobic)",
+        "zone4": "Zone 4 - Hard (Threshold)",
+        "zone5": "Zone 5 - Maximum (Anaerobic)",
+        "below": "Below Zone 1"
     }
