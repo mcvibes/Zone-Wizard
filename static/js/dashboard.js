@@ -45,7 +45,7 @@ function adjustActivityCards() {
 }
 
 /**
- * Creates a progress bar representing time in different heart rate zones
+ * Creates text percentages for time in different heart rate zones
  * @param {Object} zonePercentages - Object with zone names as keys and percentages as values
  * @param {Object} zoneColors - Object with zone names as keys and color codes as values
  * @param {string} containerId - ID of the container element
@@ -57,39 +57,26 @@ function createZoneProgressBar(zonePercentages, zoneColors, containerId) {
     // Clear previous content
     container.innerHTML = '';
     
-    // Create the progress bar container
-    const progressContainer = document.createElement('div');
-    progressContainer.className = 'd-flex';
-    progressContainer.style.height = '20px';  // Increased height to fit text
+    // Create a container for zone percentages
+    const zoneContainer = document.createElement('div');
+    zoneContainer.className = 'd-flex gap-2 flex-wrap';
     
-    // Add segments for each zone
+    // Add colored percentages for each zone
     for (const [zone, percentage] of Object.entries(zonePercentages)) {
         if (percentage > 0) {
-            const segment = document.createElement('div');
-            segment.style.backgroundColor = zoneColors[zone];
-            segment.style.width = `${percentage}%`;
-            segment.style.position = 'relative';
-            segment.style.display = 'flex';
-            segment.style.alignItems = 'center';
-            segment.style.justifyContent = 'center';
-            segment.style.color = '#fff';
-            segment.style.textShadow = '0px 0px 2px rgba(0,0,0,0.8)';
-            segment.style.fontSize = '10px';
-            segment.style.fontWeight = 'bold';
-            segment.setAttribute('data-bs-toggle', 'tooltip');
-            segment.setAttribute('data-bs-placement', 'top');
-            segment.setAttribute('title', `${zone}: ${percentage}%`);
+            const zoneElement = document.createElement('div');
+            zoneElement.style.color = zoneColors[zone];
+            zoneElement.style.fontWeight = 'bold';
+            zoneElement.textContent = `${Math.round(percentage)}%`;
+            zoneElement.setAttribute('data-bs-toggle', 'tooltip');
+            zoneElement.setAttribute('data-bs-placement', 'top');
+            zoneElement.setAttribute('title', `${zone}: ${percentage}%`);
             
-            // Only add text if segment is wide enough
-            if (percentage >= 5) {
-                segment.textContent = `${Math.round(percentage)}%`;
-            }
-            
-            progressContainer.appendChild(segment);
+            zoneContainer.appendChild(zoneElement);
         }
     }
     
-    container.appendChild(progressContainer);
+    container.appendChild(zoneContainer);
     
     // Initialize tooltips
     const tooltipTriggerList = [].slice.call(container.querySelectorAll('[data-bs-toggle="tooltip"]'));

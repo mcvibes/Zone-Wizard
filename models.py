@@ -93,32 +93,32 @@ class HeartRateZones(db.Model):
         if not self.max_hr:
             return None
         
-        # Simple 20bpm increments method as requested with adjusted Zone 4 and 5
-        # Zone 1: max_hr - 80bpm to max_hr - 60bpm (120-140 bpm for max_hr=200)
-        # Zone 2: max_hr - 60bpm to max_hr - 40bpm (140-160 bpm for max_hr=200)
-        # Zone 3: max_hr - 40bpm to max_hr - 20bpm (160-180 bpm for max_hr=200)
-        # Zone 4: 180-200 bpm (for all max heart rates)
-        # Zone 5: 200+ bpm (for all max heart rates)
+        # Fixed 20bpm zones regardless of user max HR
+        # Zone 1: 120-140 bpm
+        # Zone 2: 140-160 bpm
+        # Zone 3: 160-180 bpm
+        # Zone 4: 180-200 bpm (as requested)
+        # Zone 5: 200+ bpm
         zones = {
             "zone1": {
-                "min": max(self.max_hr - 80, 90),  # Ensure min is at least 90bpm
-                "max": self.max_hr - 60
+                "min": 120,
+                "max": 140
             },
             "zone2": {
-                "min": self.max_hr - 60,
-                "max": self.max_hr - 40
+                "min": 140,
+                "max": 160
             },
             "zone3": {
-                "min": self.max_hr - 40,
-                "max": 180  # Fixed at 180 bpm as requested
+                "min": 160,
+                "max": 180
             },
             "zone4": {
-                "min": 180,  # Fixed at 180 bpm as requested
-                "max": 200   # Fixed at 200 bpm as requested
+                "min": 180,
+                "max": 200
             },
             "zone5": {
-                "min": 200,  # Fixed at 200 bpm as requested
-                "max": 220   # Just for visualization purposes
+                "min": 200,
+                "max": 220  # Just for visualization purposes
             }
         }
         
