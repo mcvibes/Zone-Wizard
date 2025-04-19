@@ -61,6 +61,7 @@ def dashboard():
         Activity.has_heartrate == True
     ).distinct().all()
     activity_types = [t[0] for t in all_activity_types]
+    print(f"Activity types found: {activity_types}")
     
     # Calculate total time in each zone across all activities
     zone_totals = {
