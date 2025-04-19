@@ -150,6 +150,12 @@ def profile():
             else:
                 user_zones.max_hr = max_hr
                 db.session.commit()
+                
+                # Debug information
+                print(f"Setting max_hr to {max_hr}")
+                zones = user_zones.calculate_zones()
+                print(f"Calculated zones: {zones}")
+                
                 flash('Heart rate zone settings updated successfully!', 'success')
                 
                 # Recalculate zones for all activities
@@ -289,14 +295,24 @@ def recalculate_all_activity_zones(user_id):
     """
     from zone_calculator import calculate_activity_zones
     
+    print(f"Recalculating zones for user_id: {user_id}")
+    
     activities = Activity.query.filter_by(user_id=user_id, has_heartrate=True).all()
+    print(f"Found {len(activities)} activities with heart rate data")
+    
     user = User.query.get(user_id)
+    user_zones = HeartRateZones.query.filter_by(user_id=user_id).first()
+    print(f"User max HR: {user_zones.max_hr}")
+    print(f"User zones: {user_zones.calculate_zones()}")
     
     for activity in activities:
         hr_data = activity.get_hr_data()
         if hr_data:
+            print(f"Recalculating zones for activity {activity.id} - {activity.name}")
             zones = calculate_activity_zones(user, hr_data)
             if zones:
                 activity.set_zone_data(zones)
+                print(f"New zone data: {zones}")
     
     db.session.commit()
+    print("Zone recalculation complete!")
