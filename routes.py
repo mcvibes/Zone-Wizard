@@ -61,6 +61,11 @@ def dashboard():
         Activity.has_heartrate == True
     ).distinct().all()
     activity_types = [t[0] for t in all_activity_types]
+    
+    # If no activity types are found, use some defaults for testing
+    if not activity_types:
+        activity_types = ["Run", "Ride", "Workout"]
+    
     print(f"Activity types found: {activity_types}")
     
     # Calculate total time in each zone across all activities
