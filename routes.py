@@ -33,17 +33,34 @@ def dashboard():
     if days not in [7, 30, 90, 365]:
         days = 30
     
+    # Get activity type filter
+    activity_type = request.args.get('type', 'all')
+    
     # Calculate date range
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=days)
     
-    # Get activities within date range
-    activities = Activity.query.filter(
+    # Base query for activities within date range
+    query = Activity.query.filter(
         Activity.user_id == current_user.id,
         Activity.start_date >= start_date,
         Activity.start_date <= end_date,
         Activity.has_heartrate == True
-    ).order_by(desc(Activity.start_date)).all()
+    )
+    
+    # Apply activity type filter if not 'all'
+    if activity_type != 'all':
+        query = query.filter(Activity.type == activity_type)
+    
+    # Get the activities ordered by date
+    activities = query.order_by(desc(Activity.start_date)).all()
+    
+    # Get all unique activity types for the filter dropdown
+    all_activity_types = db.session.query(Activity.type).filter(
+        Activity.user_id == current_user.id,
+        Activity.has_heartrate == True
+    ).distinct().all()
+    activity_types = [t[0] for t in all_activity_types]
     
     # Calculate total time in each zone across all activities
     zone_totals = {
@@ -88,7 +105,9 @@ def dashboard():
         zone_colors=zone_colors,
         zone_labels=zone_labels,
         user_zones=user_zones,
-        days=days
+        days=days,
+        activity_type=activity_type,
+        activity_types=activity_types
     )
 
 @app.route('/activity/<int:activity_id>')
@@ -253,17 +272,27 @@ def zone_summary_data():
     if days not in [7, 30, 90, 365]:
         days = 30
     
+    # Get activity type filter
+    activity_type = request.args.get('type', 'all')
+    
     # Calculate date range
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=days)
     
-    # Get activities within date range
-    activities = Activity.query.filter(
+    # Base query for activities within date range
+    query = Activity.query.filter(
         Activity.user_id == current_user.id,
         Activity.start_date >= start_date,
         Activity.start_date <= end_date,
         Activity.has_heartrate == True
-    ).all()
+    )
+    
+    # Apply activity type filter if not 'all'
+    if activity_type != 'all':
+        query = query.filter(Activity.type == activity_type)
+    
+    # Get the activities
+    activities = query.all()
     
     # Calculate total time in each zone across all activities
     zone_totals = {

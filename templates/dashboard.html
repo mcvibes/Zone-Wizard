@@ -22,17 +22,32 @@
 {% block content %}
 <h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</h1>
 
-<!-- Date Range Filter -->
+<!-- Filters -->
 <div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
+    <div class="col-md-6 mb-4 mb-md-0">
+        <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Time Period</h5>
                 <div class="btn-group" role="group">
-                    <a href="{{ url_for('dashboard', days=7) }}" class="btn btn-{% if days == 7 %}primary{% else %}secondary{% endif %}">Last 7 Days</a>
-                    <a href="{{ url_for('dashboard', days=30) }}" class="btn btn-{% if days == 30 %}primary{% else %}secondary{% endif %}">Last 30 Days</a>
-                    <a href="{{ url_for('dashboard', days=90) }}" class="btn btn-{% if days == 90 %}primary{% else %}secondary{% endif %}">Last 3 Months</a>
-                    <a href="{{ url_for('dashboard', days=365) }}" class="btn btn-{% if days == 365 %}primary{% else %}secondary{% endif %}">Last Year</a>
+                    <a href="{{ url_for('dashboard', days=7, type=activity_type) }}" class="btn btn-{% if days == 7 %}primary{% else %}secondary{% endif %}">Last 7 Days</a>
+                    <a href="{{ url_for('dashboard', days=30, type=activity_type) }}" class="btn btn-{% if days == 30 %}primary{% else %}secondary{% endif %}">Last 30 Days</a>
+                    <a href="{{ url_for('dashboard', days=90, type=activity_type) }}" class="btn btn-{% if days == 90 %}primary{% else %}secondary{% endif %}">Last 3 Months</a>
+                    <a href="{{ url_for('dashboard', days=365, type=activity_type) }}" class="btn btn-{% if days == 365 %}primary{% else %}secondary{% endif %}">Last Year</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Activity Type</h5>
+                <div class="d-flex flex-wrap">
+                    <a href="{{ url_for('dashboard', days=days, type='all') }}" class="btn btn-{% if activity_type == 'all' %}primary{% else %}secondary{% endif %} me-2 mb-2">All Types</a>
+                    
+                    {% for type in activity_types %}
+                    <a href="{{ url_for('dashboard', days=days, type=type) }}" class="btn btn-{% if activity_type == type %}primary{% else %}secondary{% endif %} me-2 mb-2">{{ type }}</a>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -190,7 +205,7 @@
         const ctx = document.getElementById('zoneChart').getContext('2d');
         
         // Fetch data from API
-        fetch('{{ url_for("zone_summary_data", days=days) }}')
+        fetch('{{ url_for("zone_summary_data", days=days, type=activity_type) }}')
             .then(response => response.json())
             .then(data => {
                 new Chart(ctx, {
