@@ -1,0 +1,109 @@
+/* Custom CSS for Heart Rate Zone Tracker */
+
+/* General styling */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Zone color indicators */
+.zone-color {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 3px;
+}
+
+/* Activity cards */
+.activity-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.activity-list .list-group-item {
+    transition: transform 0.2s;
+}
+
+.activity-list .list-group-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Stats display */
+.activity-stats .stat-item {
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.25rem;
+    min-width: 100px;
+}
+
+.activity-stats .stat-value {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.activity-stats .stat-label {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+}
+
+/* Form elements */
+.form-control-sm {
+    height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+/* Custom scrollbar for activity list */
+.activity-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.activity-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+    }
+    
+    .activity-stats {
+        font-size: 0.9rem;
+    }
+    
+    .activity-stats .stat-value {
+        font-size: 1rem;
+    }
+}

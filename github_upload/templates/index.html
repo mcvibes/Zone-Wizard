@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Heart Rate Zone Tracker | Home{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mt-5">
+    <div class="col-md-6">
+        <div class="p-4">
+            <h1 class="display-4">Track Your Heart Rate Zones</h1>
+            <p class="lead">
+                Analyze your Strava activities and maximize your training by understanding where you spend your time in different heart rate zones.
+            </p>
+            <hr class="my-4">
+            <p>
+                Connect with Strava to visualize your heart rate data, track your training intensity, and optimize your workout performance.
+            </p>
+            <div class="mt-4">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login with Strava
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-dark text-white">
+            <div class="card-body p-4">
+                <h2 class="mb-4">Features</h2>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-chart-pie me-2 text-info"></i>
+                        Visualize time spent in different heart rate zones
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-heartbeat me-2 text-danger"></i>
+                        See heart rate distribution for each activity
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-calendar-alt me-2 text-success"></i>
+                        Track historical trends over time
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-cogs me-2 text-warning"></i>
+                        Customize your heart rate zones
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <i class="fas fa-running me-2 text-primary"></i>
+                        Analyze different activity types
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card mb-4 h-100">
+            <div class="card-body">
+                <h3 class="card-title text-center">
+                    <i class="fas fa-chart-bar text-info mb-3"></i><br>
+                    Data Visualization
+                </h3>
+                <p class="card-text">
+                    Interactive charts show your heart rate zones over time, making it easy to see where you're spending your training time.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4 h-100">
+            <div class="card-body">
+                <h3 class="card-title text-center">
+                    <i class="fas fa-bullseye text-danger mb-3"></i><br>
+                    Targeted Training
+                </h3>
+                <p class="card-text">
+                    Know if you're hitting your target zones to optimize training for endurance, fat burning, or high-intensity workouts.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4 h-100">
+            <div class="card-body">
+                <h3 class="card-title text-center">
+                    <i class="fas fa-sync-alt text-success mb-3"></i><br>
+                    Automatic Sync
+                </h3>
+                <p class="card-text">
+                    Your data automatically syncs with Strava, so you always have the latest information about your activities.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

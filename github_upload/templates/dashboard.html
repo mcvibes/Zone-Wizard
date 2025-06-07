@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Heart Rate Zone Tracker{% endblock %}
+
+{% block head %}
+<style>
+    .zone-color {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .activity-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</h1>
+
+<!-- Filters Section -->
+<div class="card mb-4">
+    <div class="card-header bg-dark">
+        <h5 class="mb-0">Filters</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- Time Period Filter -->
+            <div class="col-md-6 mb-3">
+                <h6 class="fw-bold mb-2">Time Period</h6>
+                <div class="btn-group w-100" role="group">
+                    <a href="{{ url_for('dashboard', days=7, type=activity_type) }}" class="btn btn-sm btn-{% if days == 7 %}primary{% else %}secondary{% endif %}">Last 7 Days</a>
+                    <a href="{{ url_for('dashboard', days=30, type=activity_type) }}" class="btn btn-sm btn-{% if days == 30 %}primary{% else %}secondary{% endif %}">Last 30 Days</a>
+                    <a href="{{ url_for('dashboard', days=90, type=activity_type) }}" class="btn btn-sm btn-{% if days == 90 %}primary{% else %}secondary{% endif %}">Last 3 Months</a>
+                    <a href="{{ url_for('dashboard', days=365, type=activity_type) }}" class="btn btn-sm btn-{% if days == 365 %}primary{% else %}secondary{% endif %}">Last Year</a>
+                </div>
+            </div>
+            
+            <!-- Activity Type Filter -->
+            <div class="col-md-6">
+                <h6 class="fw-bold mb-2">Activity Type</h6>
+                <div class="d-flex flex-wrap">
+                    <a href="{{ url_for('dashboard', days=days, type='all') }}" class="btn btn-sm btn-{% if activity_type == 'all' %}primary{% else %}secondary{% endif %} me-1 mb-1">All</a>
+                    
+                    {% for type in activity_types %}
+                    <a href="{{ url_for('dashboard', days=days, type=type) }}" class="btn btn-sm btn-{% if activity_type == type %}primary{% else %}secondary{% endif %} me-1 mb-1">{{ type }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Zone Summary and Chart -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Heart Rate Zone Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="zoneChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Time in Zone</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Time</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for zone in ["zone5", "zone4", "zone3", "zone2", "zone1", "below"] %}
+                            <tr>
+                                <td>
+                                    <span class="zone-color" style="background-color: {{ zone_colors[zone] }};"></span>
+                                    {{ zone_labels[zone] }}
+                                </td>
+                                <td>{{ formatted_times.get(zone, '0m') }}</td>
+                                <td>
+                                    {% if zone_percentages.get(zone, 0) > 0 %}
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ zone_percentages.get(zone, 0) }}%; background-color: {{ zone_colors[zone] }};" 
+                                             aria-valuenow="{{ zone_percentages.get(zone, 0) }}" aria-valuemin="0" aria-valuemax="100">
+                                            {{ zone_percentages.get(zone, 0) }}%
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if user_zones %}
+                <div class="small text-muted mt-3">
+                    <p><strong>Your Heart Rate Zones:</strong></p>
+                    <ul class="list-unstyled">
+                        {% for zone_name, zone_range in user_zones.calculate_zones().items() %}
+                        <li>
+                            <span class="zone-color" style="background-color: {{ zone_colors[zone_name] }};"></span>
+                            {{ zone_labels[zone_name] }}: {{ zone_range.min }} - {{ zone_range.max }} bpm
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <p class="mt-2">
+                        <a href="{{ url_for('profile') }}" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-cog"></i> Customize Zones
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Recent Activities</h5>
+            </div>
+            <div class="card-body activity-list">
+                {% if activities %}
+                <div class="list-group">
+                    {% for activity in activities %}
+                    <a href="{{ url_for('activity_detail', activity_id=activity.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ activity.name }}</h5>
+                            <small>{{ activity.start_date.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1">
+                                <span class="badge bg-secondary">{{ activity.type }}</span>
+                                {% if activity.distance %}
+                                <span class="ms-2">{{ (activity.distance / 1000)|round(2) }} km</span>
+                                {% endif %}
+                                {% if activity.moving_time %}
+                                <span class="ms-2">{{ (activity.moving_time / 60)|int }} min</span>
+                                {% endif %}
+                            </p>
+                            {% if activity.average_hr %}
+                            <span>
+                                <i class="fas fa-heartbeat text-danger"></i> {{ activity.average_hr|round|int }} bpm avg
+                                {% if activity.max_hr %}
+                                <span class="ms-1">({{ activity.max_hr|round|int }} max)</span>
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if activity.zone_data %}
+                        <!-- Small zone visualization -->
+                        <div class="mt-2">
+                            <div class="d-flex" style="height: 8px;">
+                                {% for zone in ["zone5", "zone4", "zone3", "zone2", "zone1", "below"] %}
+                                {% set percentage = activity.get_zone_data().get('percentages', {}).get(zone, 0) %}
+                                {% if percentage > 0 %}
+                                <div style="background-color: {{ zone_colors[zone] }}; width: {{ percentage }}%;"></div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No activities found with heart rate data in the selected time period.</p>
+                    <small>Try selecting a different time period or sync more activities from Strava.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create zone summary chart
+        const ctx = document.getElementById('zoneChart').getContext('2d');
+        
+        // Fetch data from API
+        fetch('{{ url_for("zone_summary_data", days=days, type=activity_type) }}')
+            .then(response => response.json())
+            .then(data => {
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.labels,
+                        datasets: data.datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 15
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        let minutes = context.raw;
+                                        if (minutes >= 60) {
+                                            let hours = Math.floor(minutes / 60);
+                                            let mins = Math.round(minutes % 60);
+                                            label += `${hours}h ${mins}m`;
+                                        } else {
+                                            label += `${Math.round(minutes)}m`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching zone data:', error);
+                document.getElementById('zoneChart').parentNode.innerHTML = 
+                    '<div class="alert alert-danger">Failed to load chart data</div>';
+            });
+    });
+</script>
+{% endblock %}

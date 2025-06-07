@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Heart Rate Zone Tracker{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="fas fa-user me-2"></i> Profile</h1>
+
+<div class="row">
+    <!-- User Profile -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">User Information</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile_pic %}
+                <img src="{{ user.profile_pic }}" alt="Profile Picture" class="rounded-circle img-thumbnail mb-3" style="width: 120px; height: 120px;">
+                {% else %}
+                <div class="mb-3">
+                    <i class="fas fa-user-circle fa-5x text-secondary"></i>
+                </div>
+                {% endif %}
+                
+                <h3>{{ user.firstname }} {{ user.lastname }}</h3>
+                {% if user.username %}
+                <p class="text-muted">@{{ user.username }}</p>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="https://www.strava.com/athletes/{{ user.strava_id }}" target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-external-link-alt me-1"></i> View on Strava
+                    </a>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="small text-muted text-start">
+                    <p class="mb-1"><strong>Connected:</strong> {{ user.token_expiry.strftime('%b %d, %Y') if user.token_expiry else 'Unknown' }}</p>
+                    <p class="mb-0"><strong>Strava ID:</strong> {{ user.strava_id }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Heart Rate Zone Settings -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Heart Rate Zone Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="max_hr" class="form-label">Maximum Heart Rate (bpm)</label>
+                                <input type="number" class="form-control" id="max_hr" name="max_hr" value="{{ user_zones.max_hr }}" min="100" max="230" required>
+                                {% if estimated_max_hr %}
+                                <div class="form-text text-muted">
+                                    <small>Estimated max HR based on age: {{ estimated_max_hr }} bpm</small>
+                                </div>
+                                {% endif %}
+    
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Zones use simple 20 BPM increments from your max heart rate:
+                                <ul class="mb-0 mt-2">
+                                    <li>Zone 1: Max HR-100 to Max HR-80</li>
+                                    <li>Zone 2: Max HR-80 to Max HR-60</li>
+                                    <li>Zone 3: Max HR-60 to Max HR-40</li>
+                                    <li>Zone 4: Max HR-40 to Max HR-20</li>
+                                    <li>Zone 5: Max HR-20 to Max HR</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Heart Rate Zones</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Zone</th>
+                                    <th>Description</th>
+                                    <th>Heart Rate Range</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone1 }};"></span>
+                                        Zone 1
+                                    </td>
+                                    <td>Very Light (Recovery)</td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone1.display }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone2 }};"></span>
+                                        Zone 2
+                                    </td>
+                                    <td>Light (Endurance)</td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone2.display }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone3 }};"></span>
+                                        Zone 3
+                                    </td>
+                                    <td>Moderate (Aerobic)</td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone3.display }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone4 }};"></span>
+                                        Zone 4
+                                    </td>
+                                    <td>Hard (Threshold)</td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone4.display }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="zone-color" style="background-color: {{ zone_colors.zone5 }};"></span>
+                                        Zone 5
+                                    </td>
+                                    <td>Maximum (Anaerobic)</td>
+                                    <td>
+                                        {% if zones %}
+                                        {{ zones.zone5.display }} bpm
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Changing your heart rate zones will recalculate zone data for all your activities.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Zone Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Simple validation for max heart rate
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const maxHrInput = document.getElementById('max_hr');
+        
+        form.addEventListener('submit', function(event) {
+            const maxHr = parseInt(maxHrInput.value);
+            
+            if (maxHr < 100 || maxHr > 230) {
+                event.preventDefault();
+                alert('Maximum heart rate must be between 100 and 230 bpm');
+            }
+        });
+    });
+</script>
+{% endblock %}
